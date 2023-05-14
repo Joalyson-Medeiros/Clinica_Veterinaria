@@ -1,6 +1,7 @@
 
 from datetime import datetime
 
+
 class Usuario:
     def __init__(self, nome, cpf, telefone, email, endereco, data_cadastro):
         self.nome = nome
@@ -10,6 +11,7 @@ class Usuario:
         self.endereco = endereco
         self.data_cadastro = data_cadastro
 
+
 class Cliente(Usuario):
     def __init__(self, nome, cpf, telefone, email, endereco, data_cadastro):
         super().__init__(nome, cpf, telefone, email, endereco, data_cadastro)
@@ -17,17 +19,18 @@ class Cliente(Usuario):
         self.historico_pagamento = []
         self.animais = []
 
+
 class Funcionario(Usuario):
-    def __init__(self, salario, funcao, horario, escala, login, senha, matricula, nome, cpf, telefone, email, endereco, data_cadastro):
+    def __init__(self, nome, cpf, telefone, email, endereco, salario, funcao, turno, login, senha, matricula, data_cadastro):
         super().__init__(nome, cpf, telefone, email, endereco, data_cadastro)
         self.salario = salario
         self.funcao = funcao
-        self.horario = horario
-        self.escala = escala
+        self.turno = turno
         self.login = login
         self.senha = senha
         self.matricula = matricula
         self.historico_ferias = []
+
 
 class Animal:
     def __init__(self, nome, idade, especie, raca, porte, dono_cpf, matricula, vacinacao):
@@ -42,12 +45,14 @@ class Animal:
         self.vacinas = []
         self.historico_vacina = []
 
+
 class Pagamento:
     def __init__(self, forma, parcelamento, valor, situacao):
         self.forma = forma
         self.parcelamento = parcelamento
         self.valor = valor
         self.situacao = situacao
+
 
 class Atendimento:
     def __init__(self, data, hora, animal, tutor, sintoma, pagamento, situacao, ficha):
@@ -60,6 +65,7 @@ class Atendimento:
         self.situacao = situacao
         self.ficha = ficha
 
+
 class Medicamento:
     def __init__(self, nome, fabricante, quantidade, validade, valor):
         self.nome = nome
@@ -68,10 +74,12 @@ class Medicamento:
         self.validade = validade
         self.valor = valor
 
+
 class Vacina(Medicamento):
     def __init__(self, nome, fabricante, quantidade, validade, valor, situacao):
         super().__init__(nome, fabricante, quantidade, validade, valor)
         self.situacao = situacao
+
 
 class Exame:
     def __init__(self, paciente, responsavel, profissional, sintoma, dataExame, diagnostico, dataDiagnostico, medicacao, situacao):
@@ -84,6 +92,7 @@ class Exame:
         self.dataDiagnostico = dataDiagnostico
         self.medicacao = medicacao
         self.situacao = situacao
+
 
 class Clinica:
     def __init__(self):
@@ -126,9 +135,10 @@ class Clinica:
     def resultados_exames(self):
         return self.exames_realizados
 
+
 clinica = Clinica()
 
-    # ================= CADASTRO =========================
+# ================= CADASTRO =========================
 
 
 def cadastrar_cliente(clinica):
@@ -136,15 +146,17 @@ def cadastrar_cliente(clinica):
     cpf = str(input("Informe o CPF: "))
     telefone = str(input("Informe o telefone: "))
     email = str(input("Informe o e-mail: "))
-    endereco = str(input("Informe o endereço: "))    
+    endereco = str(input("Informe o endereço: "))
 
     if any(cliente.cpf == cpf for cliente in clinica.clientes):
         print(f"\nCliente já cadastrado.")
         return
 
-    cliente = Cliente(nome, cpf, telefone, email, endereco, data_cadastro=datetime.today())
+    cliente = Cliente(nome, cpf, telefone, email, endereco,
+                      data_cadastro=datetime.today())
     clinica.cadastrar_cliente(cliente)
-    print(f"\nCliente {cliente.nome} com CPF {cliente.cpf}, cadastro realizado com sucesso!")
+    print(
+        f"\nCliente {cliente.nome} com CPF {cliente.cpf}, cadastro realizado com sucesso!")
 
 
 def cadastrar_animal(clinica):
@@ -155,16 +167,21 @@ def cadastrar_animal(clinica):
     porte = str(input("Informe o porte do animal: "))
     dono_cpf = str(input("Informe o cpf do dono: "))
 
-    cliente = next((cliente for cliente in clinica.clientes if cliente.cpf == dono_cpf), None)
+    cliente = next(
+        (cliente for cliente in clinica.clientes if cliente.cpf == dono_cpf), None)
 
     if not cliente:
-        print(f"\nCliente com o CPF: {dono_cpf} não encontrado. Por favor, cadastre cliente antes de associar o animal.")
+        print(
+            f"\nCliente com o CPF: {dono_cpf} não encontrado. Por favor, cadastre cliente antes de associar o animal.")
         return
 
-    animal = Animal(nome, idade, especie, raca, porte, dono_cpf, matricula=len(cliente.animais) + 1, vacinacao = "Atualizada")
+    animal = Animal(nome, idade, especie, raca, porte, dono_cpf,
+                    matricula=len(cliente.animais) + 1, vacinacao="Atualizada")
     clinica.cadastrar_animal(animal)
     cliente.animais.append(animal)
-    print(f"\nAnimal {animal.nome} cadastrado com sucesso para cliente {cliente.nome} com CPF {cliente.cpf}.")
+    print(
+        f"\nAnimal {animal.nome} cadastrado com sucesso para cliente {cliente.nome} com CPF {cliente.cpf}.")
+
 
 def cadastrar_funcionario(clinica):
     nome = str(input("\nInforme o nome: "))
@@ -172,19 +189,22 @@ def cadastrar_funcionario(clinica):
     telefone = str(input("Informe o telefone: "))
     email = str(input("Informe o e-mail: "))
     endereco = str(input("Informe o endereço: "))
-    data_cadastro = str(input("Informe o data: "))
     salario = float(input("Informe o salário: "))
     funcao = str(input("Informe a função: "))
-    horario = str(input("Informe o horário: "))
-    escala = str(input("Informe a escala: "))
+    turno = str(input("Informe o turno: "))
     login = str(input("Informe o login: "))
     senha = str(input("Informe a senha: "))
-    if cpf in clinica.funcionarios:
+    matricula = len(clinica.funcionarios)+1
+    data_cadastro = datetime.today()
+
+    if any(funcionario.cpf == cpf for funcionario in clinica.funcionarios):
         print(f"\nFuncionário já cadastrado.")
         return
-    funcionario = Funcionario(nome, cpf, telefone, email,endereco, data_cadastro, salario, funcao, horario, escala, login,senha, matricula=len(clinica.funcionários)+1)
+
+    funcionario = Funcionario(nome, cpf, telefone, email, endereco, salario, funcao, turno, login, senha, matricula, data_cadastro)
     clinica.cadastrar_funcionario(funcionario)
-    print(f"\nFuncionário {funcionario.nome} com CPF{funcionario.cpf}, cadastro realizado com sucesso!")
+    print(f"\nFuncionário {funcionario.nome} com CPF {funcionario.cpf}, cadastro realizado com sucesso!")
+
 
 def listar_clientes(clinica):
     if len(clinica.clientes) == 0:
@@ -192,17 +212,18 @@ def listar_clientes(clinica):
         return
 
     print('\n{:=^110}'.format(' CLIENTES CADASTRADOS '))
-    print('\n{:=^110}'.format(''))            
+    print('\n{:=^110}'.format(''))
     for cliente in clinica.clientes:
         print(f"Nome: {cliente.nome} | Telefone: {cliente.telefone}")
         print('{:-^110}'.format(' PETS VINCULADOS '))
         if len(cliente.animais) == 0:
             print(f"\nO cliente não possui pets.")
-            print('{:=^110}'.format(''))            
+            print('{:=^110}'.format(''))
             return
-        for animal in cliente.animais:            
+        for animal in cliente.animais:
             print(f"Nome: {animal.nome} | Vacinas: {animal.vacinacao}")
-        print('{:=^110}'.format(''))        
+        print('{:=^110}'.format(''))
+
 
 def listar_animais(self):
     if len(self.animais) == 0:
@@ -216,14 +237,18 @@ def listar_animais(self):
             print('\n{:-^110}'.format(''))
         print('{:=^110}'.format(''))
 
+
 def listar_funcionarios(clinica):
     if len(clinica.funcionarios) == 0:
         print("\nNenhum funcionário cadastrado até o momento.")
         return
-    print('\n{:=^110}'.format(' FUNCONÁRIOS CADASTRADOS '))
-    for funcionario in clinica.funcionarios:
-        print(f"Matrícula: {funcionario.matricula} | Nome: {funcionario.nome} | CPF: {funcionario.cpf} | Função: {funcionario.funcao}\n")
-        print('{:=^110}'.format(''))
+    print('\n{:=^110}'.format(' FUNCIONÁRIOS CADASTRADOS '))
+    print('\n{:=^110}'.format(''))
+    for funcionario in clinica.funcionarios:        
+        print(
+            f"Matrícula: {funcionario.matricula} | Nome: {funcionario.nome} | CPF: {funcionario.cpf} | Função: {funcionario.funcao} | Admissão: {funcionario.data_cadastro}")
+    print('{:=^110}'.format(''))
+
 
 def buscar_animal_por_nome_cpf(clinica):
     cpf = input("Informe o CPF do dono do animal: ")
@@ -255,6 +280,7 @@ def buscar_animal_por_nome_cpf(clinica):
     #         return
     # print(f'Não foi encontrado nenhum cliente com CPF: {cpf}.')
 
+
 def realizar_agendamento(clinica):
     matricula_animal = int(input("\nInforme a matrícula do animal: "))
     animal = None
@@ -273,10 +299,11 @@ def realizar_agendamento(clinica):
     sintoma = str(input("Digite quaisquer sintomas: "))
     pagamento = float(input("Digite a pagamento: "))
     atendimento = Atendimento(data, hora, animal_matricula, dono_cpf,
-                            sintoma, pagamento, situacao=False, ficha=len(clinica.consultas)+1)
+                              sintoma, pagamento, situacao=False, ficha=len(clinica.consultas)+1)
     clinica.agendar_consulta(atendimento)
     print(
         f"\nAgendamento para o animal {animal.nome} marcado para o dia {data} às {hora}.")
+
 
 def cancelar_agendamento(clinica):
     cancela_matricula = int(input("\nInforme a matrícula do animal: "))
@@ -323,7 +350,6 @@ def resultados_exames(clinica):
         print('{:=^110}'.format(''))
 
 
-
 while True:
     print('\n{:=^110}'.format(' ESCOLHA UMA OPÇÃO '))
     print("1 - Cadastrar cliente")
@@ -332,13 +358,13 @@ while True:
     print("4 - Listar clientes")
     print("5 - Listar animais")
     print("6 - Listar funcionarios")
-    print("7 - Busca animais por nome e cpf do tutor)")
+    print("7 - Busca animais por nome e cpf do tutor")
     print("8 - Realizar agendamento")
     print("9 - Cancelar agendamento")
     print("10 - Realizar exame")
     print("11 - Resultados de exames")
     print("12 - Consultar pagamento")
-    print("0 - Sair")
+    print("0 - Sair")    
     print('{:=^110}'.format(''))
     opcao = int(input("Escolhida uma opção: "))
     print('{:=^110}'.format(''))
